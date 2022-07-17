@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+
+  proxy:
+    build: ./proxy
+    ports:
+      - ${port1}:${port1}
+      - ${port2}:${port2}
+      - ${port3}:${port3}
+    networks:
+      -  pm-buli-network
+
+  frontend:
+    image: nginx:1.23.0-alpine
+    volumes:
+      - "./frontend:/usr/share/nginx/html:ro"
+    networks:
+      -  pm-buli-network
+
+    
+  backend:
+    build: ./server
+    networks:
+      -  pm-buli-network
+    volumes:
+      - "./server/db.json:/db.json:rw"
+
+networks:
+  pm-buli-network:
+    ipam:
+      driver: default
+      config:
+         - subnet: "192.168.239.0/24"
+           gateway: "192.168.239.1"
+
+        
